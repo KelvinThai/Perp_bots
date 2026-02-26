@@ -38,11 +38,12 @@ export async function createDriftClient(): Promise<{
     5000
   );
 
-  // Get perp market + oracle subscription configs (no spot markets)
-  const { perpMarketIndexes, oracleInfos } =
+  // Get market + oracle subscription configs
+  // Note: spotMarketIndexes needed for USDC quote asset oracle resolution
+  const { perpMarketIndexes, spotMarketIndexes, oracleInfos } =
     getMarketsAndOraclesForSubscription('devnet');
 
-  // Init DriftClient — perp only
+  // Init DriftClient
   const client = new DriftClient({
     connection,
     wallet,
@@ -53,6 +54,7 @@ export async function createDriftClient(): Promise<{
       accountLoader: bulkAccountLoader,
     },
     perpMarketIndexes,
+    spotMarketIndexes,
     oracleInfos,
     activeSubAccountId: SUB_ACCOUNT_ID,
     subAccountIds: [SUB_ACCOUNT_ID],
@@ -69,7 +71,9 @@ export async function createDriftClient(): Promise<{
     console.log(`Retrying driftClient.subscribe... (${retries})`);
     await new Promise((r) => setTimeout(r, 1000));
   }
-  console.log('DriftClient subscribed successfully');
+  console.log('DriftClient subscribed. Waiting for first poll cycle...');
+  await new Promise((r) => setTimeout(r, 6000));
+  console.log('DriftClient ready');
 
   return { client, connection, wallet };
 }
