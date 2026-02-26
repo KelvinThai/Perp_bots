@@ -1,0 +1,26 @@
+{
+  "name": "perp-bots",
+  "version": "1.0.0",
+  "description": "Programmatic order placement bots for custom Drift v2 DEX",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "ts-node --transpile-only src/index.ts",
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@drift-labs/sdk": "file:../protocol-v2/sdk",
+    "@solana/web3.js": "1.92.3",
+    "dotenv": "^16.3.1",
+    "yargs": "^17.7.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/yargs": "^17.0.32",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  },
+  "resolutions": {
+    "@drift-labs/sdk": "file:../protocol-v2/sdk"
+  }
+}
