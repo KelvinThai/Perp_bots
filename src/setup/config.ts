@@ -1,21 +1,20 @@
-import dotenv from 'dotenv';
 import { PublicKey } from '@solana/web3.js';
 import {
   BASE_PRECISION,
   PRICE_PRECISION,
   QUOTE_PRECISION,
 } from '@drift-labs/sdk';
+import fs from 'fs';
+import path from 'path';
 
-dotenv.config();
+const credPath = path.resolve(__dirname, '../../credentials.json');
+const creds = JSON.parse(fs.readFileSync(credPath, 'utf-8'));
 
-export const RPC_ENDPOINT =
-  process.env.RPC_ENDPOINT || 'https://api.devnet.solana.com';
-export const KEYPAIR_PATH =
-  process.env.KEYPAIR_PATH || '../protocol-v2/keys/admin-keypair.json';
-export const PROGRAM_ID = new PublicKey(
-  process.env.PROGRAM_ID || '6prdU12bH7QLTHoNPhA3RF1yzSjrduLQg45JQgCMJ1ko'
-);
-export const SUB_ACCOUNT_ID = parseInt(process.env.SUB_ACCOUNT_ID || '1', 10);
+export const RPC_ENDPOINT: string = creds.rpcEndpoint;
+export const KEYPAIR_PATH: string = creds.keypairPath;
+export const PROGRAM_ID = new PublicKey(creds.programId);
+
+export const SUB_ACCOUNTS: Record<string, number> = creds.subAccounts;
 
 // Perp market indices
 export const SOL_PERP = 0;

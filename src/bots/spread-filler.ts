@@ -13,6 +13,7 @@ export interface SpreadFillerConfig {
   checkIntervalMs: number; // default 5000
   fillSizeBase: number;    // size in base units
   dlobUrl: string;         // default http://localhost:6969
+  subAccountId: number;    // subaccount to place orders on
 }
 
 const DEFAULT_CONFIG: SpreadFillerConfig = {
@@ -20,6 +21,7 @@ const DEFAULT_CONFIG: SpreadFillerConfig = {
   checkIntervalMs: 5000,
   fillSizeBase: 0.1,
   dlobUrl: 'http://localhost:6969',
+  subAccountId: 2,
 };
 
 interface L2Response {
@@ -42,6 +44,7 @@ export class SpreadFillerBot {
     this.running = true;
     console.log(
       `[SpreadFiller] Starting on market ${this.config.marketIndex} | ` +
+        `subAccount=${this.config.subAccountId} ` +
         `interval=${this.config.checkIntervalMs}ms ` +
         `fillSize=${this.config.fillSizeBase} ` +
         `dlobUrl=${this.config.dlobUrl}`
@@ -92,7 +95,9 @@ export class SpreadFillerBot {
           marketIndex,
           direction: PositionDirection.SHORT,
           baseAssetAmount: baseAmount,
-        })
+        }),
+        undefined,
+        this.config.subAccountId
       );
       logOrder('SpreadFiller:SELL', 'SHORT', fillSizeBase, bestBid, marketIndex);
       console.log(`[SpreadFiller] tx: ${txSig}`);
@@ -103,7 +108,9 @@ export class SpreadFillerBot {
           marketIndex,
           direction: PositionDirection.LONG,
           baseAssetAmount: baseAmount,
-        })
+        }),
+        undefined,
+        this.config.subAccountId
       );
       logOrder('SpreadFiller:BUY', 'LONG', fillSizeBase, bestAsk, marketIndex);
       console.log(`[SpreadFiller] tx: ${txSig}`);

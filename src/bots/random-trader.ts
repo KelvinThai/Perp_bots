@@ -15,6 +15,7 @@ export interface RandomTraderConfig {
   maxSizeBase: number;    // max order size in base units (e.g. 5 SOL)
   minSizeBase: number;    // min order size in base units (e.g. 0.01 SOL)
   limitOrderPct: number;  // probability of limit vs market (0.5 = 50%)
+  subAccountId: number;   // subaccount to place orders on
 }
 
 const DEFAULT_CONFIG: RandomTraderConfig = {
@@ -24,6 +25,7 @@ const DEFAULT_CONFIG: RandomTraderConfig = {
   maxSizeBase: 5,
   minSizeBase: 0.01,
   limitOrderPct: 0.5,
+  subAccountId: 2,
 };
 
 export class RandomTraderBot {
@@ -40,6 +42,7 @@ export class RandomTraderBot {
     this.running = true;
     console.log(
       `[RandomTrader] Starting on market ${this.config.marketIndex} | ` +
+        `subAccount=${this.config.subAccountId} ` +
         `interval=${this.config.minIntervalMs}-${this.config.maxIntervalMs}ms ` +
         `size=${this.config.minSizeBase}-${this.config.maxSizeBase} ` +
         `limitPct=${this.config.limitOrderPct}`
@@ -101,7 +104,9 @@ export class RandomTraderBot {
           direction,
           baseAssetAmount: baseAmount,
           price: priceBN,
-        })
+        }),
+        undefined,
+        this.config.subAccountId
       );
 
       logOrder('RandomTrader:LIMIT', dirLabel, size, price, marketIndex);
@@ -112,7 +117,9 @@ export class RandomTraderBot {
           marketIndex,
           direction,
           baseAssetAmount: baseAmount,
-        })
+        }),
+        undefined,
+        this.config.subAccountId
       );
 
       logOrder('RandomTrader:MARKET', dirLabel, size, oraclePrice, marketIndex);

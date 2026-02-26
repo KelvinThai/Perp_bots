@@ -5,7 +5,7 @@ import {
   BulkAccountLoader,
   getMarketsAndOraclesForSubscription,
 } from '@drift-labs/sdk';
-import { RPC_ENDPOINT, KEYPAIR_PATH, PROGRAM_ID, SUB_ACCOUNT_ID } from './config';
+import { RPC_ENDPOINT, KEYPAIR_PATH, PROGRAM_ID, SUB_ACCOUNTS } from './config';
 import fs from 'fs';
 import path from 'path';
 
@@ -22,9 +22,12 @@ export async function createDriftClient(): Promise<{
   const keypair = Keypair.fromSecretKey(secretKey);
   const wallet = new Wallet(keypair);
 
+  // Unique subaccount IDs from credentials
+  const subAccountIds = [...new Set(Object.values(SUB_ACCOUNTS))];
+
   console.log(`Wallet: ${wallet.publicKey.toBase58()}`);
   console.log(`Program: ${PROGRAM_ID.toBase58()}`);
-  console.log(`SubAccount: ${SUB_ACCOUNT_ID}`);
+  console.log(`SubAccounts: ${JSON.stringify(SUB_ACCOUNTS)}`);
 
   // Create connection
   const connection = new Connection(RPC_ENDPOINT, {
@@ -43,7 +46,7 @@ export async function createDriftClient(): Promise<{
   const { perpMarketIndexes, spotMarketIndexes, oracleInfos } =
     getMarketsAndOraclesForSubscription('devnet');
 
-  // Init DriftClient
+  // Init DriftClient — subscribe to all subaccounts
   const client = new DriftClient({
     connection,
     wallet,
@@ -56,8 +59,8 @@ export async function createDriftClient(): Promise<{
     perpMarketIndexes,
     spotMarketIndexes,
     oracleInfos,
-    activeSubAccountId: SUB_ACCOUNT_ID,
-    subAccountIds: [SUB_ACCOUNT_ID],
+    activeSubAccountId: subAccountIds[0],
+    subAccountIds,
     txVersion: 0 as 0,
   });
 

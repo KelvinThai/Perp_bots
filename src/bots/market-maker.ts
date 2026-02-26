@@ -16,6 +16,7 @@ export interface MarketMakerConfig {
   orderSizeBase: number;  // size in base units (e.g. 1 = 1 SOL)
   refreshIntervalMs: number; // default 10000
   numLevels: number;      // default 3
+  subAccountId: number;   // subaccount to place orders on
 }
 
 const DEFAULT_CONFIG: MarketMakerConfig = {
@@ -24,6 +25,7 @@ const DEFAULT_CONFIG: MarketMakerConfig = {
   orderSizeBase: 1,
   refreshIntervalMs: 10000,
   numLevels: 3,
+  subAccountId: 1,
 };
 
 export class MarketMakerBot {
@@ -40,6 +42,7 @@ export class MarketMakerBot {
     this.running = true;
     console.log(
       `[MarketMaker] Starting on market ${this.config.marketIndex} | ` +
+        `subAccount=${this.config.subAccountId} ` +
         `spread=${this.config.spreadBps}bps levels=${this.config.numLevels} ` +
         `size=${this.config.orderSizeBase} refresh=${this.config.refreshIntervalMs}ms`
     );
@@ -116,7 +119,9 @@ export class MarketMakerBot {
         marketType: MarketType.PERP,
         marketIndex,
       },
-      orderParams
+      orderParams,
+      undefined,
+      this.config.subAccountId
     );
 
     logOrder(
